@@ -32,6 +32,10 @@ func (binding *Binding) buildRequest(
 		request.MaxCompletionTokens = (*models.MaxCompletionTokens)(&options.MaxOutputLength)
 	}
 
+	if options.JSON {
+		request.ResponseFormat = models.ResponseFormatJSON
+	}
+
 	return request
 }
 

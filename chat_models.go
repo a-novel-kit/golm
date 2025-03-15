@@ -70,4 +70,5 @@ func NewAssistantMessage(content string) AssistantMessage {
 type CompletionParams struct {
 	Temperature     *float64
 	MaxOutputLength int
+	JSON            bool
 }
