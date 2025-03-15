@@ -11,11 +11,15 @@ const DefaultEndpoint = "https://api.groq.com/openai/v1"
 
 const ChatCompletionRoute = "/chat/completions"
 
-var _ golm.ChatBinding[
+type ChatBinding = golm.ChatBinding[
 	models.ChatCompletionRequest,
 	*http.Response,
 	models.ChatCompletionChunkResponse,
-] = (*Binding)(nil)
+]
+
+type Chat = golm.Chat[models.ChatCompletionRequest, *http.Response]
+
+var _ ChatBinding = (*Binding)(nil)
 
 type Binding struct {
 	apiKey   string
