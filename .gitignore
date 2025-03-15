@@ -1,0 +1,11 @@
+.idea
+
+.envrc
+
+cover.out
+cover.html
+
+node_modules/
+docs/.vuepress/dist/
+docs/.vuepress/.temp/
+docs/.vuepress/.cache/

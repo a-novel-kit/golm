@@ -1,0 +1,2 @@
+# Secrets.
+export GROQ_TOKEN="[SECRET]"
