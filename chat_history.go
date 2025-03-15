@@ -13,10 +13,13 @@ func (chatHistory *ChatHistory) SetHistory(history ChatHistory) {
 
 func (chatHistory *ChatHistory) GetHistory() ChatHistory {
 	output := ChatHistory{
-		System: &SystemMessage{
-			Content: chatHistory.System.Content,
-		},
 		History: make([]MessageWithRole, 0, len(chatHistory.History)),
+	}
+
+	if chatHistory.System != nil {
+		output.System = &SystemMessage{
+			Content: chatHistory.System.Content,
+		}
 	}
 
 	for _, message := range chatHistory.History {

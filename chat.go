@@ -60,5 +60,5 @@ type Chat[RawRequest, RawResponse any] interface {
 // Since a chat instance maintains its own history, it is recommended to create a new chat instance for each
 // new process.
 func NewChat[Req, Res, Stream any](binding ChatBinding[Req, Res, Stream]) Chat[Req, Res] {
-	return &ChatWithBinding[Req, Res, Stream]{binding: binding}
+	return &ChatWithBinding[Req, Res, Stream]{binding: binding, ChatHistory: ChatHistory{}}
 }
