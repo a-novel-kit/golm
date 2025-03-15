@@ -261,6 +261,8 @@ func TestChatBindingCompletionJSON(t *testing.T) {
 			chat := golm.NewChat[string, string, string](binding)
 			chat.SetHistory(testCase.history)
 
+			testCase.options.JSON = true
+
 			binding.EXPECT().
 				Completion(t.Context(), testCase.message, testCase.options, testCase.history).
 				Return(testCase.completionData.resp, testCase.completionData.err)

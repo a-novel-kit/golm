@@ -52,6 +52,8 @@ func (chat *ChatWithBinding[RawRequest, RawResponse, StreamResponse]) Completion
 func (chat *ChatWithBinding[RawRequest, RawResponse, StreamResponse]) CompletionJSON(
 	ctx context.Context, message UserMessage, options CompletionParams, dest any,
 ) error {
+	options.JSON = true
+
 	resp, err := chat.Completion(ctx, message, options)
 	if err != nil {
 		return fmt.Errorf("completion: %w", err)
