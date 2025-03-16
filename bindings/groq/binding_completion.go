@@ -27,6 +27,7 @@ func (binding *Binding) buildRequest(
 
 	request.Model = binding.model
 	request.Temperature = (*models.Temperature)(options.Temperature)
+	request.User = options.User
 
 	if options.MaxOutputLength > 0 {
 		request.MaxCompletionTokens = (*models.MaxCompletionTokens)(&options.MaxOutputLength)
