@@ -8,9 +8,10 @@ import (
 
 var ErrUnknownMessageContent = errors.New("unknown message content")
 
-type MultipartMessage interface {
-	MultipartMessage() MultipartMessage
-}
+// =====================================================================================================================
+// MULTIPART MESSAGE PART
+// Represents the single element of a MultipartMessage in list format.
+// =====================================================================================================================
 
 type MultipartMessagePart interface {
 	MultipartMessagePart() MultipartMessagePart
@@ -39,6 +40,15 @@ type MessageImageURL struct {
 	Detail string `json:"detail,omitempty"`
 	// Either a URL of the image or the base64 encoded image data.
 	URL string `json:"url"`
+}
+
+// =====================================================================================================================
+// MULTIPART MESSAGE
+// Represents a message that can be either a single string or a list of multipart message parts.
+// =====================================================================================================================
+
+type MultipartMessage interface {
+	MultipartMessage() MultipartMessage
 }
 
 type MultipartMessageList []MultipartMessagePart
@@ -101,19 +111,25 @@ func (message MultipartMessageStatic) MultipartMessage() MultipartMessage {
 	return message
 }
 
-type MultipartOrStaticMessage struct {
+// =====================================================================================================================
+// MULTIPART MESSAGE WRAPPER
+// =====================================================================================================================
+
+// MultipartMessageAny ios a generic wrapper over MultipartMessageList and MultipartMessageStatic. It implements
+// custom JSON marshal methods top handle both in a single interface.
+type MultipartMessageAny struct {
 	messageContent MultipartMessage
 }
 
-func (message MultipartOrStaticMessage) MultipartMessage() MultipartMessage {
+func (message MultipartMessageAny) MultipartMessage() MultipartMessage {
 	return message.messageContent
 }
 
-func (message MultipartOrStaticMessage) MarshalJSON() ([]byte, error) {
+func (message MultipartMessageAny) MarshalJSON() ([]byte, error) {
 	return json.Marshal(message.messageContent)
 }
 
-func (message *MultipartOrStaticMessage) UnmarshalJSON(data []byte) error {
+func (message *MultipartMessageAny) UnmarshalJSON(data []byte) error {
 	// Try to decode it as array first.
 	messageContent := make(MultipartMessageList, 0)
 
@@ -127,7 +143,7 @@ func (message *MultipartOrStaticMessage) UnmarshalJSON(data []byte) error {
 	var staticContent MultipartMessageStatic
 
 	if err := json.Unmarshal(data, &staticContent); err != nil {
-		return fmt.Errorf("MultipartOrStaticMessage.UnmarshalJSON: %w", err)
+		return fmt.Errorf("MultipartMessageAny.UnmarshalJSON: %w", err)
 	}
 
 	message.messageContent = staticContent
@@ -135,10 +151,10 @@ func (message *MultipartOrStaticMessage) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func NewMultipartMessage(parts ...MultipartMessagePart) MultipartOrStaticMessage {
-	return MultipartOrStaticMessage{messageContent: MultipartMessageList(parts)}
+func NewMultipartMessage(parts ...MultipartMessagePart) MultipartMessageList {
+	return parts
 }
 
-func NewMultipartStaticMessage(content string) MultipartOrStaticMessage {
-	return MultipartOrStaticMessage{messageContent: MultipartMessageStatic(content)}
+func NewMultipartStaticMessage(content string) MultipartMessageStatic {
+	return MultipartMessageStatic(content)
 }

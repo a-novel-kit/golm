@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 type UserMessage struct {
@@ -19,25 +18,24 @@ func (message UserMessage) Message() Message {
 }
 
 func (message UserMessage) MarshalJSON() ([]byte, error) {
-	serializedContent, err := json.Marshal(message.Content)
-	if err != nil {
-		return nil, fmt.Errorf("UserMessage.MarshalJSON: %w", err)
+	out := struct {
+		Role    MessageRole      `json:"role"`
+		Name    string           `json:"name,omitempty"`
+		Content MultipartMessage `json:"content"`
+	}{
+		Role:    MessageRoleUser,
+		Name:    message.Name,
+		Content: message.Content,
 	}
 
-	messageData := []string{`"role":"` + string(MessageRoleUser) + `"`, `"content":` + string(serializedContent)}
-
-	if message.Name != "" {
-		messageData = append(messageData, `"name":"`+message.Name+`"`)
-	}
-
-	return []byte("{" + strings.Join(messageData, ",") + "}"), nil
+	return json.Marshal(out)
 }
 
 func (message *UserMessage) UnmarshalJSON(data []byte) error {
 	messageData := struct {
-		Name    string                   `json:"name"`
-		Content MultipartOrStaticMessage `json:"content"`
-		Role    MessageRole              `json:"role"`
+		Name    string              `json:"name"`
+		Content MultipartMessageAny `json:"content"`
+		Role    MessageRole         `json:"role"`
 	}{}
 
 	if err := json.Unmarshal(data, &messageData); err != nil {
@@ -49,7 +47,7 @@ func (message *UserMessage) UnmarshalJSON(data []byte) error {
 	}
 
 	message.Name = messageData.Name
-	message.Content = messageData.Content
+	message.Content = messageData.Content.MultipartMessage()
 
 	return nil
 }

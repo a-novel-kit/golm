@@ -163,7 +163,7 @@ func TestUnmarshalMessageParts(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 
-			var content models.MultipartOrStaticMessage
+			var content models.MultipartMessageAny
 			err := json.Unmarshal([]byte(testCase.content), &content)
 			require.NoError(t, err)
 

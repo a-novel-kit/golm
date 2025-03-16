@@ -28,6 +28,10 @@ type Binding struct {
 }
 
 // New returns a new groq binding. You may use a single binding instance for all your chats.
+//
+// Requires a Groq Cloud API key: https://console.groq.com/keys
+//
+// You must also specify a model compatible with chat completion api: https://console.groq.com/docs/models
 func New(apiKey string, model models.Model) *Binding {
 	return &Binding{
 		apiKey:   apiKey,

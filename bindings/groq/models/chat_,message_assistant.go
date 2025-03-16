@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 type AssistantMessage struct {
@@ -21,33 +20,19 @@ func (message AssistantMessage) Message() Message {
 }
 
 func (message AssistantMessage) MarshalJSON() ([]byte, error) {
-	messageData := []string{
-		`"role":"` + string(MessageRoleAssistant) + `"`,
+	out := struct {
+		Role      MessageRole `json:"role"`
+		Name      string      `json:"name,omitempty"`
+		Content   string      `json:"content,omitempty"`
+		ToolCalls []ToolCall  `json:"tool_calls,omitempty"`
+	}{
+		Role:      MessageRoleAssistant,
+		Name:      message.Name,
+		Content:   message.Content,
+		ToolCalls: message.ToolCalls,
 	}
 
-	if message.Content != "" {
-		serializedContent, err := json.Marshal(message.Content)
-		if err != nil {
-			return nil, fmt.Errorf("AssistantMessage.MarshalJSON: %w", err)
-		}
-
-		messageData = append(messageData, `"content":`+string(serializedContent))
-	}
-
-	if len(message.ToolCalls) > 0 {
-		serializedToolCalls, err := json.Marshal(message.ToolCalls)
-		if err != nil {
-			return nil, fmt.Errorf("AssistantMessage.MarshalJSON: %w", err)
-		}
-
-		messageData = append(messageData, `"tool_calls":`+string(serializedToolCalls))
-	}
-
-	if message.Name != "" {
-		messageData = append(messageData, `"name":"`+message.Name+`"`)
-	}
-
-	return []byte("{" + strings.Join(messageData, ",") + "}"), nil
+	return json.Marshal(out)
 }
 
 func (message *AssistantMessage) UnmarshalJSON(data []byte) error {
