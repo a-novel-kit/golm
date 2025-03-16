@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 type ToolCallMessage struct {
@@ -18,18 +17,17 @@ func (message ToolCallMessage) Message() Message {
 }
 
 func (message ToolCallMessage) MarshalJSON() ([]byte, error) {
-	serializedContent, err := json.Marshal(message.Content)
-	if err != nil {
-		return nil, fmt.Errorf("ToolCallMessage.MarshalJSON: %w", err)
+	out := struct {
+		Role       MessageRole `json:"role"`
+		Content    string      `json:"content"`
+		ToolCallID string      `json:"tool_call_id,omitempty"`
+	}{
+		Role:       MessageRoleTool,
+		Content:    message.Content,
+		ToolCallID: message.ToolCallID,
 	}
 
-	messageData := []string{`"role":"` + string(MessageRoleTool) + `"`, `"content":` + string(serializedContent)}
-
-	if message.ToolCallID != "" {
-		messageData = append(messageData, `"tool_call_id":"`+message.ToolCallID+`"`)
-	}
-
-	return []byte("{" + strings.Join(messageData, ",") + "}"), nil
+	return json.Marshal(out)
 }
 
 func (message *ToolCallMessage) UnmarshalJSON(data []byte) error {
