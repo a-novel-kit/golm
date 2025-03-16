@@ -31,7 +31,7 @@ type ChatCompletionRequest struct {
 	// supported. Other values will result in a 400 response.
 	//
 	// Defaults to 1.
-	SuggestionsCount *SuggestionsCount `json:"suggestions_count,omitempty"`
+	SuggestionsCount *SuggestionsCount `json:"n,omitempty"`
 
 	// Whether to enable parallel function calling during tool use.
 	// Defaults to true.
