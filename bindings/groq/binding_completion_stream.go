@@ -20,7 +20,7 @@ const ChatCompletionStreamPrefix = "data: "
 var ErrCompletionStream = errors.New("groq.Binding.ErrCompletionStream")
 
 func NewErrCompletionStream(err error) error {
-	return errors.Join(err, ErrCompletion)
+	return errors.Join(err, ErrCompletionStream)
 }
 
 func (binding *Binding) StreamResponseToMessage(response models.ChatCompletionChunkResponse) string {
